@@ -9,7 +9,7 @@
     min-height: calc(100vh - 250px);
 }
 .active{
-    @apply text-[#F5900B] font-bold text-2xl lg:text-lg
+    @apply text-[#A2F740] font-bold text-2xl lg:text-lg
 }
 .default{
     @apply text-white text-2xl lg:text-lg
