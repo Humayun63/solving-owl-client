@@ -6,7 +6,7 @@ const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false)
     return (
         <nav className='h-16 py-4 relative px-2 lg:px-0'>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between border-b pb-2'>
                 <Link to='/' className='inline-flex items-center gap-2'>
                     <img src={logo} alt="Image" className='bg-white rounded-md p-1 w-14 lg:w-12' />
                     <span className='text-2xl lg:text-xl font-medium uppercase'>Solving <span className='text-[#F5900B]'>Owl</span></span>
