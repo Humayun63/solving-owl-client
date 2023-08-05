@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ShowProblems from '../../components/ShowProblems/ShowProblems';
+import { useLoaderData } from 'react-router-dom';
 
 const EasyProblems = () => {
+    const loadProblems = useLoaderData() || []
+    const [problems, setProblems] = useState(loadProblems)
     return (
-        <div>
-            Easy Problems
-        </div>
+        <ShowProblems title={'Easy Problems'} items={problems}></ShowProblems>
     );
 };
 

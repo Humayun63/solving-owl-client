@@ -22,7 +22,8 @@ const router = createBrowserRouter([
             },
             {
                 path:'home',
-                element:<Home></Home>
+                element:<Home></Home>,
+                loader: () => fetch('https://solving-owl-server.vercel.app/all-problems')
             },
             {
                 path:'login',
@@ -38,15 +39,18 @@ const router = createBrowserRouter([
             },
             {
                 path:'easy-problems',
-                element:<EasyProblems></EasyProblems>
+                element:<EasyProblems></EasyProblems>,
+                loader: () => fetch('https://solving-owl-server.vercel.app/easy-problems')
             },
             {
                 path:'medium-problems',
-                element:<MediumProblems></MediumProblems>
+                element:<MediumProblems></MediumProblems>,
+                loader: () => fetch('https://solving-owl-server.vercel.app/medium-problems')
             },
             {
                 path:'advance-problems',
-                element:<AdvanceProblems></AdvanceProblems>
+                element:<AdvanceProblems></AdvanceProblems>,
+                loader: () => fetch('https://solving-owl-server.vercel.app/advance-problems')
             }
         ]
     },
