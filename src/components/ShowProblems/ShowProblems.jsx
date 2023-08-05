@@ -8,7 +8,7 @@ const ShowProblems = ({title, items}) => {
     return (
         <>
             <h2 className='text-3xl font-medium text-center my-8 border-b pb-2'>{title}</h2>
-            <div className='flex flex-col md:flex-row justify-between items-start gap-4'>
+            <div className={`flex flex-col md:flex-row justify-between gap-4 items-start`}>
                 <div className='w-full md:w-1/2'>
                     <Lottie animationData={animation1} />
                     <hr className={items.length > 5 ? 'md:block' : 'hidden'} />
