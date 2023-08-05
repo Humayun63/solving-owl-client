@@ -9,6 +9,7 @@ import Profile from "../pages/ProfilePage/Profile";
 import EasyProblems from "../pages/EasyProblemPage/EasyProblems";
 import MediumProblems from "../pages/MediumProblemPage/MediumProblems";
 import AdvanceProblems from "../pages/AdvanceProblemPage/AdvanceProblems";
+import SingleProblemPage from "../pages/SingleProblemPage/SingleProblemPage";
 
 const router = createBrowserRouter([
     {
@@ -51,6 +52,11 @@ const router = createBrowserRouter([
                 path:'advance-problems',
                 element:<AdvanceProblems></AdvanceProblems>,
                 loader: () => fetch('https://solving-owl-server.vercel.app/advance-problems')
+            },
+            {
+                path:'problems/:id',
+                element:<SingleProblemPage></SingleProblemPage>,
+                loader: ({params}) => fetch(`https://solving-owl-server.vercel.app/problem/${params.id}`)
             }
         ]
     },
