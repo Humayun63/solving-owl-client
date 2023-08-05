@@ -9,7 +9,7 @@ const NavBar = () => {
             <div className='flex items-center justify-between border-b pb-2'>
                 <Link to='/' className='inline-flex items-center gap-2'>
                     <img src={logo} alt="Image" className='bg-white rounded-md p-1 w-14 lg:w-12' />
-                    <span className='text-2xl lg:text-xl font-medium uppercase'>Solving <span className='text-[#F5900B]'>Owl</span></span>
+                    <span className='text-2xl lg:text-xl font-medium uppercase'>Solving <span className='text-[#A2F740]'>Owl</span></span>
                 </Link>
 
                 <ul className='lg:flex gap-4 hidden'>
@@ -28,7 +28,7 @@ const NavBar = () => {
                 </ul>
 
                 <div className="hidden lg:block">
-                    <Link to='/login'><button className='bg-white text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
+                    <Link to='/login'><button className='bg-[#A2F740] text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
                 </div>
                 <FaBars className='h-10 w-10 lg:hidden cursor-pointer' onClick={() => setIsOpen(true)} />
 
@@ -57,7 +57,7 @@ const NavBar = () => {
                         </li>
                     </ul>
                     <div>
-                        <Link to='/login'><button className='bg-white text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
+                        <Link to='/login'><button className='bg-[#A2F740] text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
                     </div>
                 </div>
 

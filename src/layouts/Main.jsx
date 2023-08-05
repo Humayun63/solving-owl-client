@@ -7,17 +7,23 @@ const MainLayout = () => {
     return (
         <>
             <div className='w-full min-h-screen bg-slate-700'>
-                <div className="container h-[100vh] mx-auto flex flex-col gap-y-4">
-                    <header>
-                        <NavBar></NavBar>
+                <div className=" h-[100vh] mx-auto flex flex-col ">
+                    <header className='bg-slate-700'>
+                        <div className='w-full px-2 md:w-11/12 md:mx-auto'>
+                            <NavBar></NavBar>
+                        </div>
                     </header>
-                    <main className='px-2 md:px-0'>
-                        <Outlet></Outlet>
+                    <main className='bg-slate-700'>
+                        <div className='w-full px-2 md:w-11/12 md:mx-auto'>
+                            <Outlet></Outlet>
+                        </div>
                     </main>
-                    <footer className='mt-auto pb-4'>
-                        <Footer></Footer>
-                    </footer>                
-                    </div>
+                    <footer className='mt-auto bg-slate-700'>
+                        <div className='w-full pb-4 px-2 md:w-11/12 md:mx-auto'>
+                            <Footer></Footer>
+                        </div>
+                    </footer>
+                </div>
             </div>
         </>
     );
