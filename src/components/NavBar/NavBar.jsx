@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaBars, FaWindowClose } from "react-icons/fa";
 import { Link, NavLink } from 'react-router-dom';
-import logo from './logo.png'
+import logo from '../../assets/logo.png'
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false)
     return (

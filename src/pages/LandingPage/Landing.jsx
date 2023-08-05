@@ -1,10 +1,14 @@
 import React from 'react';
 
+
 const Landing = () => {
     return (
-        <div>
-            Landing Page
-        </div>
+        <>
+            <div>
+                Landing Page
+            </div>
+
+        </>
     );
 };
 
