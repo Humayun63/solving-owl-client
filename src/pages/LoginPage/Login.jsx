@@ -3,10 +3,12 @@ import { AuthContext } from '../../provider/AuthProvider';
 import animation from '../../assets/lottiefiles/animation.json'
 import Lottie from "lottie-react";
 import { FaGithub, FaGoogle } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Login = () => {
-    const { setTitle, googleSignIn, emailSignIn } = useContext(AuthContext) || {}
+    const { setTitle, googleSignIn, emailSignIn, githubSignIn } = useContext(AuthContext) || {}
+    const navigate = useNavigate();
 
     setTitle('Login |')
 
@@ -18,10 +20,58 @@ const Login = () => {
     }, []);
 
     const handleGoogleLogin = () => {
-
+        googleSignIn()
+            .then(result => {
+                Swal.fire({
+                    position: 'center-center',
+                    icon: 'success login',
+                    title: `Welcome ${result?.user?.displayName || 'User'}`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                navigate('/home', { replace: true })
+            })
+            .catch(error => console.log(error))
+    }
+    const handleGithubLogin = () => {
+        githubSignIn()
+            .then(result => {
+                Swal.fire({
+                    position: 'center-center',
+                    icon: 'success login',
+                    title: `Welcome ${result?.user?.displayName || 'User'}`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                navigate('/home', { replace: true })
+            })
+            .catch(error => console.log(error))
     }
     const handleSignIn = event => {
+        event.preventDefault()
+        const form = event.target
+        const email = form.email.value
+        const password = form.password.value
 
+        emailSignIn(email, password)
+            .then(result => {
+                Swal.fire({
+                    position: 'center-center',
+                    icon: 'success login',
+                    title: `Welcome ${result?.user?.displayName || 'User'}`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                form.reset()
+                navigate('/home', { replace: true })
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message,
+                })
+            })
     }
 
     return (
@@ -31,7 +81,7 @@ const Login = () => {
                     <Lottie animationData={animation}></Lottie>
                 </div>
                 <div className='w-full md:w-1/2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
-                    <form className="">
+                    <form className="" onSubmit={handleSignIn}>
                         <h2 className='text-black text-3xl py-4 font-semibold'>Login your account!</h2>
                         <hr className='mb-4' />
                         <div className="mb-4">
@@ -43,6 +93,7 @@ const Login = () => {
                                 id="email"
                                 type="email"
                                 placeholder="Email"
+                                name="email"
                                 required
                             />
                         </div>
@@ -55,6 +106,7 @@ const Login = () => {
                                 id="password"
                                 type="password"
                                 placeholder="Password"
+                                name="password"
                                 required
                             />
                         </div>
@@ -70,13 +122,13 @@ const Login = () => {
                     </form>
                     <hr className='my-4' />
                     <div className='text-center space-x-2 space-y-2'>
-                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2'>
+                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2' onClick={handleGoogleLogin}>
                             <FaGoogle className='text-2xl'></FaGoogle>
                             <span className=''>Login With Google</span>
                         </button>
-                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2'>
+                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2' onClick={handleGithubLogin}>
                             <FaGithub className='text-2xl'></FaGithub>
-                            <span className=''>Login With Google</span>
+                            <span className=''>Login With GitHub</span>
                         </button>
                     </div>
                 </div>

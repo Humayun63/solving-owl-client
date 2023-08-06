@@ -3,39 +3,105 @@ import { AuthContext } from '../../provider/AuthProvider';
 import animation from '../../assets/lottiefiles/computer-man.json'
 import Lottie from "lottie-react";
 import { FaGithub, FaGoogle } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
-    const { setTitle, googleSignIn, emailSignIn } = useContext(AuthContext) || {}
+    const { setTitle, googleSignIn, createUser, updateUser, logOut } = useContext(AuthContext) || {}
     const [selectedImage, setSelectedImage] = useState(null);
+    const navigate = useNavigate()
 
-    
+
     setTitle('Register |')
-    
+
     useEffect(() => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth',
         });
     }, []);
-    
+
     const handleGoogleLogin = () => {
-        
+        googleSignIn()
+            .then(result => {
+                Swal.fire({
+                    position: 'center-center',
+                    icon: 'success login',
+                    title: `Welcome ${result?.user?.displayName || 'User'}`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                navigate('/home', { replace: true })
+            })
+            .catch(error => console.log(error))
     }
-    const handleSignIn = event => {
-        
+
+    const handleGithubLogin = () => {
+        githubSignIn()
+            .then(result => {
+                Swal.fire({
+                    position: 'center-center',
+                    icon: 'success login',
+                    title: `Welcome ${result?.user?.displayName || 'User'}`,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                navigate('/home', { replace: true })
+            })
+            .catch(error => console.log(error))
     }
+
     const handleImageChange = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setSelectedImage(reader.result);
-        };
-        reader.readAsDataURL(file);
-      }
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSelectedImage(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
-    
+
+    const handleSubmit = event => {
+        event.preventDefault()
+        const form = event.target
+        const name = form.name.value;
+        const email = form.email.value;
+        const password = form.password.value;
+        const photo = form.image.value;
+
+        createUser(email, password)
+            .then(result => {
+                updateUser(name, photo)
+                    .then(() => {
+                        Swal.fire({
+                            position: 'center-center',
+                            icon: 'Successfully Registered',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        logOut()
+                            .then()
+                            .catch(error => (
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: error.message,
+                                })
+                            ))
+                        form.reset()
+                        navigate('/login', { replace: true })
+                    })
+                    .catch(error => (
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error.message,
+                        })
+                    ))
+            })
+
+    }
+
     return (
         <>
             <div className='flex flex-col md:flex-row gap-4 justify-between items-center my-8'>
@@ -43,7 +109,7 @@ const Register = () => {
                     <Lottie animationData={animation}></Lottie>
                 </div>
                 <div className='w-full md:w-1/2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
-                    <form className="">
+                    <form className="" onSubmit={handleSubmit}>
                         <h2 className='text-black text-3xl py-4 font-semibold'>Register to Solving Owl!</h2>
                         <hr className='mb-4' />
                         <div className="mb-4">
@@ -54,6 +120,7 @@ const Register = () => {
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 type="text"
                                 placeholder="Name"
+                                name='name'
                                 required
                             />
                         </div>
@@ -66,6 +133,7 @@ const Register = () => {
                                 id="email"
                                 type="email"
                                 placeholder="Email"
+                                name='email'
                                 required
                             />
                         </div>
@@ -78,6 +146,7 @@ const Register = () => {
                                 id="password"
                                 type="password"
                                 placeholder="Password"
+                                name='password'
                                 required
                             />
                         </div>
@@ -91,6 +160,7 @@ const Register = () => {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleImageChange}
+                                name='image'
                                 required
                             />
                             {selectedImage && (
@@ -111,13 +181,13 @@ const Register = () => {
                     </form>
                     <hr className='my-4' />
                     <div className='text-center space-x-2 space-y-2'>
-                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2'>
+                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2' onClick={handleGoogleLogin}>
                             <FaGoogle className='text-2xl'></FaGoogle>
                             <span className=''>Register With Google</span>
                         </button>
-                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2'>
+                        <button className='bg-slate-700 hover:bg-slate-950 inline-flex items-center px-4 py-2 rounded gap-2' onClick={handleGithubLogin}>
                             <FaGithub className='text-2xl'></FaGithub>
-                            <span className=''>Register With Google</span>
+                            <span className=''>Register With GitHub</span>
                         </button>
                     </div>
                 </div>
