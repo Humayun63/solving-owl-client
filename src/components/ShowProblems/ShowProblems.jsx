@@ -12,11 +12,11 @@ const ShowProblems = ({title, items}) => {
                 <div className='w-full md:w-1/2'>
                     <Lottie animationData={animation1} />
                     <hr className={items.length > 5 ? 'md:block' : 'hidden'} />
-                    <Lottie animationData={animation2} className={`mt-8 ${items.length > 5 ? 'md:block' : 'hidden'}`} />
+                    <Lottie animationData={animation2} className={`mt-8 hidden ${items.length > 5 ? 'md:block' : 'hidden'}`} />
                 </div>
                 <div className='space-y-2 w-full md:w-1/2 pb-4'>
                     {
-                        items.map(item => <SingleProblem problem={item}></SingleProblem>)
+                        items.map(item => <SingleProblem key={item._id} problem={item}></SingleProblem>)
                     }
                 </div>
             </div>
