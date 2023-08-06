@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Lottie from "lottie-react";
 import animation from './animation.json'
 import { TypeAnimation } from 'react-type-animation';
@@ -6,7 +6,12 @@ import { Link } from 'react-router-dom';
 import LongText from './LongText';
 
 const Landing = () => {
-    
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    }, []);
 
     return (
         <div className='flex flex-col-reverse md:flex-row w-full gap-4 justify-between items-center pb-4'>

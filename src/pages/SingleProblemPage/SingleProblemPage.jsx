@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
 import CodeEditor from '@uiw/react-textarea-code-editor';
@@ -10,6 +10,13 @@ const SingleProblemPage = () => {
     const { title, sub_title, tests } = loadedProblem[0] || {}
     const [code, setCode] = useState('');
     const [output, setOutput] = useState([])
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    }, []);
 
     const handleSubmit = event => {
         event.preventDefault()
@@ -35,9 +42,7 @@ const SingleProblemPage = () => {
             try {
                 result = eval(`(${inputCode})(${item.input})`)
                 if (item.output !== result) {
-                    console.log('failed');
                     setOutput((output) => [...output, `Failed: ${item.fail} not ${result}`])
-                    setAllResult(false)
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
