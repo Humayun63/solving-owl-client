@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import Swal from 'sweetalert2';
+import { AuthContext } from '../../provider/AuthProvider';
 
 
 const SingleProblemPage = () => {
     const loadedProblem = useLoaderData() || [];
-    const { title, sub_title, tests } = loadedProblem[0] || {}
+    const { user } = useContext(AuthContext) || {}
+    const { title, sub_title, tests, _id } = loadedProblem[0] || {}
     const [code, setCode] = useState('');
     const [output, setOutput] = useState([])
 
@@ -58,10 +60,46 @@ const SingleProblemPage = () => {
                         showConfirmButton: false,
                         timer: 1500
                     })
+
+                    // Save problem id
+                    if (user && user.email) {
+                        fetch('https://solving-owl-server.vercel.app/user/solved', {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('access-token')}`
+                            },
+                            body: JSON.stringify({ email: user?.email, problemId: _id })
+                        })
+                            .then(res => res.json())
+                            .then(data => console.log(data))
+                            .catch(error => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops....',
+                                    text: `Something Went wrong : ${error?.message}`
+                                })
+                            })
+                    }else{
+                        // Save to local storage
+                        const solvedProblems = localStorage.getItem('solvedProblems')
+                        if(solvedProblems){
+                            const solvedProblemsParsed = JSON.parse(solvedProblems)
+                            if(solvedProblemsParsed.includes(_id)){
+                                console.log('Already Solved')
+                            }else{
+                                solvedProblemsParsed.push(_id)
+                                localStorage.setItem('solvedProblems', JSON.stringify(solvedProblemsParsed))
+                            }
+                        }else{
+                            localStorage.setItem('solvedProblems', JSON.stringify([_id]))
+                        }
+                    }
+
                 } else {
                     setOutput((output) => [...output, 'Passed'])
                 }
-            } catch(error){
+            } catch (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
