@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { FaBars, FaWindowClose } from "react-icons/fa";
+import React, { useContext, useState } from 'react';
+import { FaBars, FaUser, FaWindowClose } from "react-icons/fa";
 import { Link, NavLink } from 'react-router-dom';
 import logo from '../../assets/logo.png'
+import { AuthContext } from '../../provider/AuthProvider';
 const NavBar = () => {
+    const { user, logOut, loading } = useContext(AuthContext) || {}
     const [isOpen, setIsOpen] = useState(false)
+    const handleLogOut = () => {
+        setIsOpen(false)
+        logOut()
+            .then(result => console.log(result))
+            .catch(error => console.log(error))
+    }
     return (
         <nav className='h-16 py-4 relative px-2 lg:px-0'>
             <div className='flex items-center justify-between border-b pb-2'>
@@ -11,7 +19,6 @@ const NavBar = () => {
                     <img src={logo} alt="Image" className='bg-white rounded-md p-1 w-14 lg:w-12' />
                     <span className='text-2xl lg:text-xl font-medium uppercase'>Solving <span className='text-[#A2F740]'>Owl</span></span>
                 </Link>
-
                 <ul className='lg:flex gap-4 hidden'>
                     <li>
                         <NavLink to='/home' className={({ isActive }) => (isActive ? 'active' : 'default')}>Home</NavLink>
@@ -28,7 +35,16 @@ const NavBar = () => {
                 </ul>
 
                 <div className="hidden lg:block">
-                    <Link to='/login'><button className='bg-[#A2F740] text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
+                    {
+                        (user && !loading) ? <div className='inline-flex items-center gap-2'>
+                            {
+                                user?.photoURL ? <img src={user?.photoURL} alt={'image'} title={user?.displayName} className='w-12 rounded-full' /> : <FaUser></FaUser>
+                            }
+                            <button className='rounded-md bg-[#A2F740] text-black px-4 py-2' onClick={handleLogOut}>LogOut</button>
+                        </div> : <>
+                            <Link to='/login'><button className='bg-[#A2F740] text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
+                        </>
+                    }
                 </div>
                 <FaBars className='h-10 w-10 lg:hidden cursor-pointer' onClick={() => setIsOpen(true)} />
 
@@ -57,7 +73,16 @@ const NavBar = () => {
                         </li>
                     </ul>
                     <div>
-                        <Link to='/login'><button className='bg-[#A2F740] text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
+                        {
+                            (user && !loading) ? <div className='inline-flex items-center gap-2'>
+                                {
+                                    user?.photoURL ? <img src={user?.photoURL} alt={'image'} title={user?.displayName} className='w-12 rounded-full' onClick={() => setIsOpen(false)} /> : <FaUser onClick={() => setIsOpen(false)}></FaUser>
+                                }
+                                <button className='rounded-md bg-[#A2F740] text-black px-4 py-2' onClick={handleLogOut}>LogOut</button>
+                            </div> : <>
+                                <Link to='/login' onClick={() => setIsOpen(false)}><button className='bg-[#A2F740] text-black px-4 py-2 rounded-md'>Login/Register</button></Link>
+                            </>
+                        }
                     </div>
                 </div>
 

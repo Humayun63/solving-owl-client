@@ -4,10 +4,13 @@ import animation from '../../assets/lottiefiles/computer-man.json'
 import Lottie from "lottie-react";
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const Register = () => {
     const { setTitle, googleSignIn, createUser, updateUser, logOut } = useContext(AuthContext) || {}
     const [selectedImage, setSelectedImage] = useState(null);
+    const [imageFile, setImageFile] = useState(null)
     const navigate = useNavigate()
 
 
@@ -23,35 +26,98 @@ const Register = () => {
     const handleGoogleLogin = () => {
         googleSignIn()
             .then(result => {
-                Swal.fire({
-                    position: 'center-center',
-                    icon: 'success login',
-                    title: `Welcome ${result?.user?.displayName || 'User'}`,
-                    showConfirmButton: false,
-                    timer: 1500
+                const loggedUser = {
+                    email: result?.user?.email,
+                    name: result?.user?.displayName
+                }
+
+                fetch('https://solving-owl-server.vercel.app/users', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(loggedUser)
                 })
-                navigate('/home', { replace: true })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                        Swal.fire({
+                            position: 'center-center',
+                            icon: 'success',
+                            title: `Welcome ${result?.user?.displayName || 'User'}`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        navigate('/home', { replace: true })
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error?.message,
+                        })
+                    })
+
+
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message,
+                })
+            })
     }
 
     const handleGithubLogin = () => {
         githubSignIn()
             .then(result => {
-                Swal.fire({
-                    position: 'center-center',
-                    icon: 'success login',
-                    title: `Welcome ${result?.user?.displayName || 'User'}`,
-                    showConfirmButton: false,
-                    timer: 1500
+                const loggedUser = {
+                    email: result?.user?.email,
+                    name: result?.user?.displayName
+                }
+
+                fetch('https://solving-owl-server.vercel.app/users', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(loggedUser)
                 })
-                navigate('/home', { replace: true })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                        Swal.fire({
+                            position: 'center-center',
+                            icon: 'success',
+                            title: `Welcome ${result?.user?.displayName || 'User'}`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        navigate('/home', { replace: true })
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error?.message,
+                        })
+                    })
+
+
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error?.message,
+                })
+            })
     }
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
+        setImageFile(file)
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -61,44 +127,90 @@ const Register = () => {
         }
     };
 
-    const handleSubmit = event => {
+    const handleSubmit = async (event) => {
         event.preventDefault()
         const form = event.target
         const name = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
-        const photo = form.image.value;
+        const image = event.target.image.files[0];
 
-        createUser(email, password)
-            .then(result => {
-                updateUser(name, photo)
-                    .then(() => {
-                        Swal.fire({
-                            position: 'center-center',
-                            icon: 'Successfully Registered',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        logOut()
-                            .then()
-                            .catch(error => (
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: error.message,
+        const formData = new FormData();
+        formData.append('image', image && image)
+
+        fetch(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_PHOTO_API}`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(imageResponse => {
+                if (imageResponse?.data) {
+                    createUser(email, password)
+                        .then(result => {
+                            const loggedUser = {
+                                email: result?.user?.email,
+                                name: result?.user?.displayName
+                            }
+
+                            fetch('https://solving-owl-server.vercel.app/users', {
+                                method: 'POST',
+                                headers: {
+                                    'content-type': 'application/json'
+                                },
+                                body: JSON.stringify(loggedUser)
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    console.log(data)
+                                    updateUser(name, imageResponse?.data?.url)
+                                        .then(() => {
+                                            Swal.fire({
+                                                position: 'center-center',
+                                                icon: 'success',
+                                                title: 'Successfully Registered',
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                            })
+                                            logOut()
+                                                .then()
+                                                .catch(error => (
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Oops...',
+                                                        text: error?.message,
+                                                    })
+                                                ))
+                                            form.reset()
+                                            navigate('/login', { replace: true })
+                                        })
+                                        .catch(error => (
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: error?.message,
+                                            })
+                                        ))
                                 })
-                            ))
-                        form.reset()
-                        navigate('/login', { replace: true })
-                    })
-                    .catch(error => (
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: error.message,
+                                .catch(error => (
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: error?.message,
+                                    })
+                                ))
+
                         })
-                    ))
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: error.message,
+                            })
+                        })
+                }
             })
+            .catch(error => console.log(error))
+
 
     }
 

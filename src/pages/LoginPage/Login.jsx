@@ -22,30 +22,92 @@ const Login = () => {
     const handleGoogleLogin = () => {
         googleSignIn()
             .then(result => {
-                Swal.fire({
-                    position: 'center-center',
-                    icon: 'success login',
-                    title: `Welcome ${result?.user?.displayName || 'User'}`,
-                    showConfirmButton: false,
-                    timer: 1500
+                const loggedUser = {
+                    email: result?.user?.email,
+                    name: result?.user?.displayName
+                }
+
+                fetch('https://solving-owl-server.vercel.app/users', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(loggedUser)
                 })
-                navigate('/home', { replace: true })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                        Swal.fire({
+                            position: 'center-center',
+                            icon: 'success',
+                            title: `Welcome ${result?.user?.displayName || 'User'}`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        navigate('/home', { replace: true })
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error?.message,
+                        })
+                    })
+
+
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error?.message,
+                })
+            })
     }
     const handleGithubLogin = () => {
         githubSignIn()
             .then(result => {
-                Swal.fire({
-                    position: 'center-center',
-                    icon: 'success login',
-                    title: `Welcome ${result?.user?.displayName || 'User'}`,
-                    showConfirmButton: false,
-                    timer: 1500
+                const loggedUser = {
+                    email: result?.user?.email,
+                    name: result?.user?.displayName
+                }
+
+                fetch('https://solving-owl-server.vercel.app/users', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(loggedUser)
                 })
-                navigate('/home', { replace: true })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(data)
+                        Swal.fire({
+                            position: 'center-center',
+                            icon: 'success',
+                            title: `Welcome ${result?.user?.displayName || 'User'}`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        navigate('/home', { replace: true })
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: error?.message,
+                        })
+                    })
+
+
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error?.message,
+                })
+            })
     }
     const handleSignIn = event => {
         event.preventDefault()
