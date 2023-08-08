@@ -1,15 +1,19 @@
 import React, { useContext, useState } from 'react';
 import { FaBars, FaUser, FaWindowClose } from "react-icons/fa";
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png'
 import { AuthContext } from '../../provider/AuthProvider';
 const NavBar = () => {
-    const { user, logOut, loading } = useContext(AuthContext) || {}
+    const { user, logOut, loading, setIsSolved } = useContext(AuthContext) || {}
     const [isOpen, setIsOpen] = useState(false)
+    const navigate = useNavigate()
     const handleLogOut = () => {
         setIsOpen(false)
         logOut()
-            .then(result => console.log(result))
+            .then(result =>{
+                navigate('/home', {replace:true})
+                setIsSolved([])
+            })
             .catch(error => console.log(error))
     }
     return (

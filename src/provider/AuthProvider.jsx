@@ -13,6 +13,40 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [title, setTitle] = useState('')
     const [loading, setLoading] = useState(true)
+    const [isSolved, setIsSolved] = useState([])
+    const [userDetails, setUserDetails] = useState({})
+
+    useEffect(() => {
+        if (user) {
+            fetch(`https://solving-owl-server.vercel.app/users/single-user/${user?.email}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access-token')}`
+                },
+            })
+                .then(res => res.json())
+                .then(data => setUserDetails(data))
+                .catch(error => console.log(error))
+        }
+    }, [user])
+
+
+
+    useEffect(() => {
+        if (user && userDetails?.solved) {
+            setIsSolved(userDetails?.solved)
+        }
+
+        if (!user && localStorage.getItem('solvedProblems')) {
+            setIsSolved(JSON.parse(localStorage.getItem('solvedProblems')))
+        }
+        if (user) {
+            localStorage.removeItem('solvedProblems')
+        }
+    }, [userDetails])
+
+    console.log(userDetails)
 
     const createUser = (email, password) => {
         setLoading(true)
@@ -84,6 +118,8 @@ const AuthProvider = ({ children }) => {
         githubSignIn,
         updateUser,
         logOut,
+        setIsSolved,
+        isSolved,
         loading
     }
 

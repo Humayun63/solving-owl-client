@@ -42,7 +42,7 @@ const Register = () => {
                     .then(data => {
                         console.log(data)
                         Swal.fire({
-                            position: 'center-center',
+                            position: 'center',
                             icon: 'success',
                             title: `Welcome ${result?.user?.displayName || 'User'}`,
                             showConfirmButton: false,
@@ -88,7 +88,7 @@ const Register = () => {
                     .then(data => {
                         console.log(data)
                         Swal.fire({
-                            position: 'center-center',
+                            position: 'center',
                             icon: 'success',
                             title: `Welcome ${result?.user?.displayName || 'User'}`,
                             showConfirmButton: false,
@@ -165,7 +165,7 @@ const Register = () => {
                                     updateUser(name, imageResponse?.data?.url)
                                         .then(() => {
                                             Swal.fire({
-                                                position: 'center-center',
+                                                position: 'center',
                                                 icon: 'success',
                                                 title: 'Successfully Registered',
                                                 showConfirmButton: false,

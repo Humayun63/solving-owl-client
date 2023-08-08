@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import Loader from '../../components/Loader/Loader';
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import Swal from 'sweetalert2';
@@ -8,10 +8,26 @@ import { AuthContext } from '../../provider/AuthProvider';
 
 const SingleProblemPage = () => {
     const loadedProblem = useLoaderData() || [];
-    const { user } = useContext(AuthContext) || {}
+    const { user, isSolved, setIsSolved } = useContext(AuthContext) || {}
     const { title, sub_title, tests, _id } = loadedProblem[0] || {}
+    // const { title, sub_title, _id } = loadedProblem[0] || {}
+    const [dontShow, setDontShow] = useState(false)
     const [code, setCode] = useState('');
     const [output, setOutput] = useState([])
+    const navigate = useNavigate()
+
+
+
+
+    function large(arr) {
+        const sorted = arr.sort((a, b) => b - a)
+        return sorted[0]
+    }
+
+    let solvedIds = []
+    if (isSolved) {
+        solvedIds = isSolved
+    }
 
     useEffect(() => {
         window.scrollTo({
@@ -26,8 +42,9 @@ const SingleProblemPage = () => {
         let result;
         setOutput([])
 
+        const isArrowFunction = code.trim().split(' ')[0] !== 'function';
 
-        if (code.trim().split('')[0] !== 'function') {
+        if (isArrowFunction) {
             let array = code.trim().split('')
             if (array[array.length - 1] === ';') {
                 array.pop()
@@ -35,14 +52,19 @@ const SingleProblemPage = () => {
             let index = array.indexOf('=')
             array.splice(0, index + 1)
             inputCode = array.join('')
-        } else {
-            inputCode = code;
-        }
-        console.log(inputCode);
+        } 
+       
 
         for (let item of tests) {
             try {
-                result = eval(`(${inputCode})(${item.input})`)
+                if (isArrowFunction) {
+                    console.log('arrow calling', inputCode)
+                    result = eval(`(${inputCode})(${item.input})`)
+                } else {
+                    console.log('normal calling', code)
+                    result = eval(`(${code})(${item.input})`)
+                }
+
                 if (item.output !== result) {
                     setOutput((output) => [...output, `Failed: ${item.fail} not ${result}`])
                     Swal.fire({
@@ -54,12 +76,13 @@ const SingleProblemPage = () => {
                 } else if (item === tests[tests.length - 1]) {
                     setOutput((output) => [...output, 'Passed'])
                     Swal.fire({
-                        position: 'center-center',
+                        position: 'center',
                         icon: 'success',
-                        title: 'Your work has been saved',
+                        title: 'Successfully Solved The Problem!',
                         showConfirmButton: false,
                         timer: 1500
                     })
+
 
                     // Save problem id
                     if (user && user.email) {
@@ -72,7 +95,9 @@ const SingleProblemPage = () => {
                             body: JSON.stringify({ email: user?.email, problemId: _id })
                         })
                             .then(res => res.json())
-                            .then(data => console.log(data))
+                            .then(data => {
+                                setIsSolved([...isSolved, _id])
+                            })
                             .catch(error => {
                                 Swal.fire({
                                     icon: 'error',
@@ -80,19 +105,38 @@ const SingleProblemPage = () => {
                                     text: `Something Went wrong : ${error?.message}`
                                 })
                             })
-                    }else{
+                    } else {
                         // Save to local storage
                         const solvedProblems = localStorage.getItem('solvedProblems')
-                        if(solvedProblems){
+                        if (solvedProblems) {
                             const solvedProblemsParsed = JSON.parse(solvedProblems)
-                            if(solvedProblemsParsed.includes(_id)){
+                            if (solvedProblemsParsed.includes(_id)) {
                                 console.log('Already Solved')
-                            }else{
+                            } else {
                                 solvedProblemsParsed.push(_id)
                                 localStorage.setItem('solvedProblems', JSON.stringify(solvedProblemsParsed))
+                                setIsSolved([...isSolved, _id])
                             }
-                        }else{
+                        } else {
                             localStorage.setItem('solvedProblems', JSON.stringify([_id]))
+                            setIsSolved([...isSolved, _id])
+                        }
+                        if (!user && !dontShow) {
+                            Swal.fire({
+                                title: 'You are not logged in!',
+                                text: 'Login for track your process',
+                                showDenyButton: true,
+                                showCancelButton: true,
+                                confirmButtonText: 'Login',
+                                denyButtonText: `Don't show this again`,
+                            }).then((result) => {
+                                /* Read more about isConfirmed, isDenied below */
+                                if (result.isConfirmed) {
+                                    navigate('/login', { replace: true })
+                                } else if (result.isDenied) {
+                                    setDontShow(true)
+                                }
+                            })
                         }
                     }
 
@@ -108,6 +152,8 @@ const SingleProblemPage = () => {
             }
         }
 
+
+
     }
     return (
         <>
@@ -115,7 +161,7 @@ const SingleProblemPage = () => {
                 loadedProblem.length === 0 ? <Loader></Loader> : <>
                     <div className='mt-4'>
                         <h2 className='text-2xl font-semibold mb-4'>* {title}</h2>
-                        <p>{sub_title}</p>
+                        <p className='md:flex justify-between'>{sub_title} {isSolved.includes(_id) && <span className='text-black bg-[#A2F740] px-2 py-1 rounded-md'>Solved</span>}</p>
                         <form className='py-4' onSubmit={handleSubmit}>
                             <CodeEditor
                                 className='rounded-lg'

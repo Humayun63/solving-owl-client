@@ -38,7 +38,7 @@ const Login = () => {
                     .then(data => {
                         console.log(data)
                         Swal.fire({
-                            position: 'center-center',
+                            position: 'center',
                             icon: 'success',
                             title: `Welcome ${result?.user?.displayName || 'User'}`,
                             showConfirmButton: false,
@@ -83,7 +83,7 @@ const Login = () => {
                     .then(data => {
                         console.log(data)
                         Swal.fire({
-                            position: 'center-center',
+                            position: 'center',
                             icon: 'success',
                             title: `Welcome ${result?.user?.displayName || 'User'}`,
                             showConfirmButton: false,
@@ -118,7 +118,7 @@ const Login = () => {
         emailSignIn(email, password)
             .then(result => {
                 Swal.fire({
-                    position: 'center-center',
+                    position: 'center',
                     icon: 'success login',
                     title: `Welcome ${result?.user?.displayName || 'User'}`,
                     showConfirmButton: false,
